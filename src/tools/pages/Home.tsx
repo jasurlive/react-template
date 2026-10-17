@@ -1,29 +1,15 @@
 import "../css/home.css";
 import Menu from "../shared/Menu";
 import { useGetUsers } from "../hooks/GET/useGetUsers";
-import { useShortcuts } from "../hooks/LOCAL/useShortcuts";
-import { useTheme } from "../hooks/LOCAL/useTheme";
+import Header from "../components/Header";
 
 export default function Home() {
-  const { theme, toggleTheme } = useTheme();
   const { users, loading, error } = useGetUsers();
-
-  useShortcuts({ "ctrl+j": toggleTheme });
 
   return (
     <div className="home-container with-menu">
+      <Header />
       <Menu />
-
-      <header className="home-menu">
-        <h1 className="home-title">my-vite-template</h1>
-        <button
-          className="home-toggle"
-          onClick={toggleTheme}
-          title="Toggle theme (Ctrl+J)"
-        >
-          {theme === "dark" ? "Light" : "Dark"}
-        </button>
-      </header>
 
       <main className="home-content">
         {loading && <p className="home-status">Loading users…</p>}
@@ -38,6 +24,7 @@ export default function Home() {
             <li key={user.id} className="home-item">
               <span className="home-name">{user.name}</span>
               <span className="home-email">{user.email}</span>
+              <span className="home-email">{user.username}</span>
             </li>
           ))}
         </ul>

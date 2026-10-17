@@ -10,62 +10,104 @@ import {
   FiDatabase,
   FiHelpCircle,
   FiShield,
+  FiSun,
+  FiMoon,
 } from "react-icons/fi";
 import "../css/menu.css";
+import { useTheme } from "../hooks/LOCAL/useTheme";
+import { useShortcuts } from "../hooks/LOCAL/useShortcuts";
 
 export type MenuItem = {
   label: string;
   icon: ReactNode;
-  href: string;
+  href?: string;
+  onClick?: () => void;
   mobile?: boolean;
 };
 
-const MENU_ITEMS: MenuItem[] = [
-  { label: "Home", icon: <FiHome />, href: "/", mobile: true },
-  { label: "Users", icon: <FiUsers />, href: "/users", mobile: true },
-  {
-    label: "Analytics",
-    icon: <FiBarChart2 />,
-    href: "/analytics",
-    mobile: true,
-  },
-  { label: "Reports", icon: <FiFileText />, href: "/reports", mobile: true },
-  { label: "Database", icon: <FiDatabase />, href: "/database" },
-  { label: "Security", icon: <FiShield />, href: "/security" },
-  { label: "Settings", icon: <FiSettings />, href: "/settings", mobile: true },
-  { label: "Help", icon: <FiHelpCircle />, href: "/help" },
-];
-
-export default function Menu() {
+export default function Menu({
+  items = [
+    { label: "Home", icon: <FiHome />, href: "/", mobile: true },
+    { label: "Users", icon: <FiUsers />, href: "/users", mobile: true },
+    {
+      label: "Analytics",
+      icon: <FiBarChart2 />,
+      href: "/analytics",
+      mobile: true,
+    },
+    { label: "Reports", icon: <FiFileText />, href: "/reports", mobile: true },
+    { label: "Database", icon: <FiDatabase />, href: "/database" },
+    { label: "Security", icon: <FiShield />, href: "/security" },
+    {
+      label: "Settings",
+      icon: <FiSettings />,
+      href: "/settings",
+      mobile: true,
+    },
+    { label: "Help", icon: <FiHelpCircle />, href: "/help" },
+  ],
+}: {
+  items?: MenuItem[];
+}) {
   const [collapsed, setCollapsed] = useState(true);
+  const { theme, toggleTheme } = useTheme();
+
+  useShortcuts({ "ctrl+j": toggleTheme });
+
+  const menuItems: MenuItem[] = [
+    ...items,
+    {
+      label: theme === "dark" ? "Light theme" : "Dark theme",
+      icon: theme === "dark" ? <FiSun /> : <FiMoon />,
+      onClick: toggleTheme,
+      mobile: true,
+    },
+  ];
 
   return (
-    <nav
-      className={`menu ${collapsed ? "menu-collapsed" : ""}`}
-      // onMouseEnter={() => setCollapsed(false)}
-      // onMouseLeave={() => setCollapsed(true)}2
-    >
+    <nav className={`menu ${collapsed ? "menu-collapsed" : ""}`}>
       <button
+        type="button"
         className="menu-toggle"
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => setCollapsed((value) => !value)}
         aria-label="Toggle sidebar"
       >
         {collapsed ? <FiChevronRight /> : <FiChevronLeft />}
       </button>
 
-      {MENU_ITEMS.map((item) => (
-        <a
-          key={item.href}
-          href={item.href}
-          className={`menu-item ${
-            item.mobile ? "menu-mobile-visible" : "menu-desktop-only"
-          }`}
-          title={item.label}
-        >
-          <span className="menu-icon">{item.icon}</span>
-          <span className="menu-label">{item.label}</span>
-        </a>
-      ))}
+      {menuItems.map((item) => {
+        const className = `menu-item ${
+          item.mobile ? "menu-mobile-visible" : "menu-desktop-only"
+        }`;
+
+        const content = (
+          <>
+            <span className="menu-icon">{item.icon}</span>
+            <span className="menu-label">{item.label}</span>
+          </>
+        );
+
+        return item.onClick ? (
+          <button
+            key={item.label}
+            type="button"
+            className={className}
+            onClick={item.onClick}
+            title={item.label}
+          >
+            {content}
+          </button>
+        ) : item.href ? (
+          <a
+            key={item.href}
+            href={item.href}
+            className={className}
+            title={item.label}
+          >
+            {content}
+          </a>
+        ) : null;
+      })}
     </nav>
   );
 }
