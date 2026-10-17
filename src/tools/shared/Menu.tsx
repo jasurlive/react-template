@@ -42,8 +42,8 @@ export default function Menu() {
   return (
     <nav
       className={`menu ${collapsed ? "menu-collapsed" : ""}`}
-      onMouseEnter={() => setCollapsed(false)}
-      onMouseLeave={() => setCollapsed(true)}
+      // onMouseEnter={() => setCollapsed(false)}
+      // onMouseLeave={() => setCollapsed(true)}2
     >
       <button
         className="menu-toggle"
